@@ -13,12 +13,9 @@
  layout(location = 1) out vec2 outTexcoord; // 頂点テクスチャ座標
 
  // プログラムからの入力
- layout(location = 0) uniform vec3 scale; // スケール
- layout(location = 1) uniform vec3 position; // 位置
- layout(location = 2) uniform vec2 rotationY; // Y軸回転
- layout(location = 3) uniform vec2 aspectRatioAndScaleFov; // アスペクト比と視野角による拡大率
- layout(location = 4) uniform vec3 cameraPosition; // カメラの位置
- layout(location = 5) uniform vec2 cameraRotationY; // カメラのY軸回転
+ layout(location = 0) uniform mat4 transform; // 座標変換ベクトル
+ layout(location = 1) uniform mat4 cameraTransform; // カメラの座標変換ベクトル
+ layout(location = 2) uniform vec2 aspectRatioAndScaleFov; // アスペクト比と視野角による拡大率
 
 
  void main()
@@ -26,25 +23,11 @@
 	// テクスチャ座標の設定
 	outTexcoord = inTexcoord;
 
-
 	// ローカル座標系からワールド座標系に変換
- 	vec3 pos = inPosition * scale;
-
-	float sinY = rotationY.x;
-	float cosY = rotationY.y;
-	gl_Position.x = pos.x * cosY + pos.z * sinY;
-	gl_Position.y = pos.y;
-	gl_Position.z = pos.x * -sinY + pos.z * cosY;
-	
-	gl_Position.xyz += position;
+	gl_Position = transform * vec4(inPosition, 1);
 
 	// ワールド座標系からビュー座標系に変換
-	pos = gl_Position.xyz - cameraPosition;
-	float cameraSinY = cameraRotationY.x;
-	float cameraCosY = cameraRotationY.y;
-	gl_Position.x = pos.x * cameraCosY + pos.z * cameraSinY;
-	gl_Position.y = pos.y;
-	gl_Position.z = pos.x * -cameraSinY + pos.z * cameraCosY;
+	gl_Position = cameraTransform * gl_Position;
 
 	// ビュー座標系からクリップ座標系に変換
 	gl_Position.xy *= aspectRatioAndScaleFov;

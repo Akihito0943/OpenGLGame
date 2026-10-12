@@ -8,7 +8,22 @@
 #include "GameObject.h"
 
 
- /// <summary>
+/// <summary>
+/// デストラクタ
+/// </summary>
+GameObject::~GameObject()
+{
+	// オブジェクトが消える際に親子関係を解除する
+	SetParent(nullptr);
+
+	// 自身を親にしているオブジェクトから親を解除する
+	for (auto& c : children) {
+		c->parent = nullptr;
+	}
+}
+
+
+/// <summary>
  /// ゲームオブジェクトから削除されたコンポーネントを削除する
  /// </summary>
 void GameObject::RemoveDestroyedComponent()
@@ -38,6 +53,36 @@ void GameObject::RemoveDestroyedComponent()
 	* 削除予定コンポーネントの参照が全て消えるのでコンポーネント
 	* 自体もここで削除される。
 	*/
+}
+
+
+/// <summary>
+/// 親オブジェクトを設定する(nullptrを指定すると解消)
+/// </summary>
+/// <param name="parent">親オブジェクト</param>
+void GameObject::SetParent(GameObject* parent)
+{
+	// 同じ親を設定された場合は何もしない
+	if (parent == this->parent) return;
+
+	// 別の親が設定されている場合は、その親との関係を解除
+	if (this->parent) {
+		std::vector<GameObject*>& c = this->parent->children;
+		auto itr = std::find(c.begin(), c.end(), this);
+		// 配列から自身を削除
+		if (itr != c.end()) c.erase(itr);
+	}
+
+	// 新しい親を設定
+	if (parent) {
+		parent->children.push_back(this);
+	}
+	this->parent = parent;
+}
+
+void GameObject::SetParent(const GameObjectPtr& parent)
+{
+	SetParent(parent.get());
 }
 
 

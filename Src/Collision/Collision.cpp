@@ -38,6 +38,41 @@ bool Intersect(const AABB& a, const AABB& b, vec3& penetration)
 	if (dz1 <= 0) return false;
 
 
-	// 交差確定
-	return true;
+	/**
+	* 交差確定
+	*/
+
+
+	// 貫通距離を計算
+
+	vec3 length = { dx1, dy1, dz1 }; // 貫通距離の絶対値
+	vec3 signedLength = length;		 // 符号付きの貫通距離
+
+	// XYZの各軸で重なっている距離が短い方向を選択
+	if (dx0 < dx1) {
+		length.x = dx0;
+		signedLength.x = -dx0;
+	}
+	if (dy0 < dy1) {
+		length.y = dy0;
+		signedLength.y = -dy0;
+	}
+	if (dz0 < dz1) {
+		length.z = dz0;
+		signedLength.z = -dz0;
+	}
+
+	// XYZの内、最も短い方向を選択
+	if (length.x < length.y) {
+		if (length.x < length.z) {
+			penetration = { signedLength.x, 0, 0 };
+			return true;
+		}		
+	}
+	else if (length.y < length.z) {
+		penetration = { 0,signedLength.y,0 };
+		return true;
+	}
+	penetration = { 0, 0,signedLength.z };
+	return true;	
 }

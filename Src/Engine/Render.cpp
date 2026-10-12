@@ -174,8 +174,9 @@ void Render::Rendering()
 	glProgramUniform2f(program3D, glGetUniformLocation(program3D, "aspectRatioAndScaleFov"), 1 / (scaleFov * aspectRatio), 1 / scaleFov);
 
 	// カメラのパラメータを設定
-	glProgramUniform3fv(program3D, glGetUniformLocation(program3D, "cameraPosition"), 1, &engine->GetMainCamera().position.x);
-	glProgramUniform2f(program3D, glGetUniformLocation(program3D, "cameraRotationY"), sinf(-engine->GetMainCamera().rotation.y), cosf(-engine->GetMainCamera().rotation.y));
+	MainCamera& camera = engine->GetMainCamera();
+	mat4 cameraTransform = camera.GetCameraTransformMatrix();
+	glProgramUniformMatrix4fv(program3D, glGetUniformLocation(program3D, "cameraTransform"), 1, GL_FALSE, &cameraTransform.data[0].x);
 
 	// 深度テストを有効か
 	glEnable(GL_DEPTH_TEST);
@@ -193,9 +194,18 @@ void Render::Rendering()
 
 		// ユニフォーム変数にデータをコピー
 		glProgramUniform4fv(program3D, glGetUniformLocation(program3D, "color"), 1, p->color);
-		glProgramUniform3fv(program3D, glGetUniformLocation(program3D, "scale"), 1, &p->scale.x);
-		glProgramUniform3fv(program3D, glGetUniformLocation(program3D, "position"), 1, &p->position.x);
-		glProgramUniform2f(program3D, glGetUniformLocation(program3D, "rotationY"), sinf(p->rotation.y), cosf(p->rotation.y));
+
+		// 座標変換ベクトルを作成
+		mat4 transform = GetTransformMatrix(p->scale, p->rotation, p->position);
+
+		// 全ての親の座標変換ベクトル配列を掛け合わせる
+		for (GameObject* e = p->GetParent(); e; e = e->GetParent()) {
+			mat4 parentTransform = GetTransformMatrix(e->scale, e->rotation, e->position);
+			transform = parentTransform * transform;
+		}
+
+		// 座標変換ベクトルをGUIにコピー
+		glProgramUniformMatrix4fv(program3D, glGetUniformLocation(program3D, "transform"), 1, GL_FALSE, &transform.data[0].x);
 
 		// 図形を描画
 		const DrawParams& params = drawParamsList[p->meshId];

@@ -134,11 +134,13 @@
     <None Include="Res\standard_2D.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Collision\AabbCollider.cpp" />
     <ClCompile Include="Src\Collision\Collision.cpp" />
     <ClCompile Include="Src\Component\PlayerCamera.cpp" />
     <ClCompile Include="Src\Engine\Debug.cpp" />
     <ClCompile Include="Src\Engine\Engine.cpp" />
     <ClCompile Include="Src\Engine\GameObject.cpp" />
+    <ClCompile Include="Src\Engine\MainCamera.cpp" />
     <ClCompile Include="Src\Engine\Render.cpp" />
     <ClCompile Include="Src\Engine\Texture.cpp" />
     <ClCompile Include="Src\glad\src\glad.c" />
@@ -148,12 +150,15 @@
   <ItemGroup>
     <ClInclude Include="Res\Mesh\crystal_mesh.h" />
     <ClInclude Include="Res\Mesh\square_mesh.h" />
+    <ClInclude Include="Src\Collision\AabbCollider.h" />
+    <ClInclude Include="Src\Collision\Collider.h" />
     <ClInclude Include="Src\Collision\Collision.h" />
     <ClInclude Include="Src\Component\Component.h" />
     <ClInclude Include="Src\Component\PlayerCamera.h" />
     <ClInclude Include="Src\Engine\Debug.h" />
     <ClInclude Include="Src\Engine\Engine.h" />
     <ClInclude Include="Src\Engine\GameObject.h" />
+    <ClInclude Include="Src\Engine\MainCamera.h" />
     <ClInclude Include="Src\Engine\Math.h" />
     <ClInclude Include="Src\Engine\Mesh.h" />
     <ClInclude Include="Src\Engine\Render.h" />

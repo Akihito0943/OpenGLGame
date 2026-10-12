@@ -31,7 +31,11 @@ class GameObject
 
 public:
 	GameObject() = default;
-	virtual ~GameObject() = default;
+	virtual ~GameObject();
+
+	// コピーと代入を禁止
+	GameObject(GameObject&) = delete;
+	GameObject& operator=(GameObject&) = delete;
 
 public:
 	/// <summary>
@@ -73,6 +77,36 @@ public:
 	/// ゲームオブジェクトから削除されたコンポーネントを削除する
 	/// </summary>
 	void RemoveDestroyedComponent();
+
+
+	/// <summary>
+	/// 親オブジェクトを取得する
+	/// </summary>
+	/// <returns>親オブジェクト</returns>
+	GameObject* GetParent() const { return parent; }
+
+
+	/// <summary>
+	/// 子オブジェクトの数を取得する
+	/// </summary>
+	/// <returns>子オブジェクトの数</returns>
+	size_t GetChildrenCount() const { return children.size(); }
+
+
+	/// <summary>
+	/// 指定したインデックスの子オブジェクトを取得する
+	/// </summary>
+	/// <param name="index">子オブジェクト配列の添字</param>
+	/// <returns>index番目の子オブジェクト</returns>
+	GameObject* GetChild(size_t index) const { return children[index]; }
+
+
+	/// <summary>
+	/// 親オブジェクトを設定する(nullptrを指定すると解消)
+	/// </summary>
+	/// <param name="parent">親オブジェクト</param>
+	void SetParent(GameObject* parent);
+	void SetParent(const GameObjectPtr& parent);
 
 
 	/// <summary>
@@ -129,6 +163,12 @@ private:
 
 	// 死亡フラグ
 	bool isDestroyed = false;
+
+	// 親オブジェクト
+	GameObject* parent = nullptr;
+
+	// 子オブジェクト
+	std::vector<GameObject*> children = {};
 
 	// コンポーネントの配列
 	std::vector<ComponentPtr> components = {};

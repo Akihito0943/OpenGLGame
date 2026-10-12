@@ -11,6 +11,7 @@
 #include <string>
 
 #include "GameObject.h"
+#include "MainCamera.h"
 #include "Render.h"
 #include "../Scene/Scene.h"
 
@@ -72,8 +73,8 @@ public:
 	/// メインカメラを取得する
 	/// </summary>
 	/// <returns>メインカメラ</returns>
-	GameObject& GetMainCamera() { return camera; } // 変更可
-	const GameObject& GetMainCamera() const { return camera; } // 変更不可
+	MainCamera& GetMainCamera() { return camera; } // 変更可
+	const MainCamera& GetMainCamera() const { return camera; } // 変更不可
 
 
 	/// <summary>
@@ -132,7 +133,7 @@ private:
 	const std::string title = "OpenGLGame";
 
 	// カメラオブジェクト
-	GameObject camera;
+	MainCamera camera;
 
 	// レンダーオブジェクト
 	Render render;
