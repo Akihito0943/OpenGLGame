@@ -41,6 +41,13 @@ public:
 	/// <returns>座標変換したコライダー</returns>
 	virtual ColliderPtr GetTransformedCollider(const mat4& transform) const override;
 
+
+	/// <summary>
+	/// 図形を取得する
+	/// </summary>
+	/// <returns>自身の図形</returns>
+	const AABB& GetShape() const { return aabb; }
+
 public:
 	// AABBのサイズ
 	AABB aabb = { { -0.5f, -0.5f, -0.5f }, { 0.5f, 0.5f, 0.5f } };

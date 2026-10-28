@@ -59,6 +59,10 @@ struct vec3
 	explicit vec3(float a) { x = a; y = a; z = a; }
 	explicit vec3(const struct vec4& v);
 
+	// 添字演算子
+	float& operator[](size_t index) { return (&x)[index]; } // xのアドレスを基準に順番にアクセス
+	const float& operator[](size_t index) const { return (&x)[index]; }
+
 	// -vec3
 	vec3 operator-() const 
 	{ 

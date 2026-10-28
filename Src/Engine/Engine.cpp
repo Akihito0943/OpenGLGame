@@ -145,6 +145,28 @@ void Engine::UpdateGameObject(float deltaTime)
 			p->Update(deltaTime);
 		}
 	}
+
+	// ローカル座標変換行列を計算
+	for (int i = 0; i < gameObjectList.size(); i++) {
+		const GameObjectPtr& p = gameObjectList[i];
+		p->transform = GetTransformMatrix(p->scale, p->rotation, p->position);
+	}
+
+	// ワールド座標変換行列を計算
+	std::vector<mat4> worldTransform(gameObjectList.size());
+	for (int i = 0; i < gameObjectList.size(); i++) {
+		const GameObjectPtr& p = gameObjectList[i];
+		mat4 transform = p->transform;
+		for (GameObject* parent = p->parent; parent; parent = parent->parent) {
+			transform = parent->transform * transform;
+		}
+		worldTransform[i] = transform;
+	}
+
+	// ワールド座標変換行列をゲームオブジェクトに設定
+	for (int i = 0; i < gameObjectList.size(); i++) {
+		gameObjectList[i]->transform = worldTransform[i];
+	}
 }
 
 

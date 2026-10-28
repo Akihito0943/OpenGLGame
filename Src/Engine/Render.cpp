@@ -176,6 +176,11 @@ void Render::Rendering()
 	// カメラのパラメータを設定
 	MainCamera& camera = engine->GetMainCamera();
 	mat4 cameraTransform = camera.GetCameraTransformMatrix();
+	// カメラの親子関係を設定
+	for (GameObject* e = camera.GetParent(); e; e = e->GetParent()) {
+		mat4 parentTransform = GetTransformMatrix(vec3(1), -e->rotation, -e->position);
+		cameraTransform = parentTransform * cameraTransform;
+	}
 	glProgramUniformMatrix4fv(program3D, glGetUniformLocation(program3D, "cameraTransform"), 1, GL_FALSE, &cameraTransform.data[0].x);
 
 	// 深度テストを有効か
@@ -195,17 +200,8 @@ void Render::Rendering()
 		// ユニフォーム変数にデータをコピー
 		glProgramUniform4fv(program3D, glGetUniformLocation(program3D, "color"), 1, p->color);
 
-		// 座標変換ベクトルを作成
-		mat4 transform = GetTransformMatrix(p->scale, p->rotation, p->position);
-
-		// 全ての親の座標変換ベクトル配列を掛け合わせる
-		for (GameObject* e = p->GetParent(); e; e = e->GetParent()) {
-			mat4 parentTransform = GetTransformMatrix(e->scale, e->rotation, e->position);
-			transform = parentTransform * transform;
-		}
-
 		// 座標変換ベクトルをGUIにコピー
-		glProgramUniformMatrix4fv(program3D, glGetUniformLocation(program3D, "transform"), 1, GL_FALSE, &transform.data[0].x);
+		glProgramUniformMatrix4fv(program3D, glGetUniformLocation(program3D, "transform"), 1, GL_FALSE, &p->GetTransform().data[0].x);
 
 		// 図形を描画
 		const DrawParams& params = drawParamsList[p->meshId];

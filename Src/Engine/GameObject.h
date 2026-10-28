@@ -9,10 +9,12 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <type_traits>
 
 #include "Math.h"
 #include "Texture.h"
 #include "../Component/Component.h"
+#include "../Collision/Collider.h"
 
 
  // 先行宣言
@@ -20,6 +22,7 @@ class Engine;
 class GameObject;
 using GameObjectPtr = std::shared_ptr<GameObject>;
 using GameObjectList = std::vector<GameObjectPtr>;
+namespace Collision { void HandleGameObjectCollision(const GameObjectList& gameObjects); }
 
 
 /**
@@ -28,6 +31,7 @@ using GameObjectList = std::vector<GameObjectPtr>;
 class GameObject
 {
 	friend Engine;
+	friend void Collision::HandleGameObjectCollision(const GameObjectList& gameObjects);
 
 public:
 	GameObject() = default;
@@ -67,6 +71,9 @@ public:
 	{
 		auto p = std::make_shared<T>();
 		p->owner = this;
+		if constexpr (std::is_base_of_v<Collider, T>) {
+			colliders.push_back(p);
+		}
 		components.push_back(p);
 		p->Awake();
 		return p;
@@ -107,6 +114,13 @@ public:
 	/// <param name="parent">親オブジェクト</param>
 	void SetParent(GameObject* parent);
 	void SetParent(const GameObjectPtr& parent);
+
+
+	/// <summary>
+	/// 座標変換行列を取得する
+	/// </summary>
+	/// <returns></returns>
+	const mat4& GetTransform() const { return transform; }
 
 
 	/// <summary>
@@ -164,6 +178,9 @@ private:
 	// 死亡フラグ
 	bool isDestroyed = false;
 
+	// 座標変換行列
+	mat4 transform = mat4(1);
+
 	// 親オブジェクト
 	GameObject* parent = nullptr;
 
@@ -172,4 +189,7 @@ private:
 
 	// コンポーネントの配列
 	std::vector<ComponentPtr> components = {};
+
+	// コライダー配列
+	std::vector<ColliderPtr> colliders = {};
 };

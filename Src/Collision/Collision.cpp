@@ -1,7 +1,32 @@
-#include "Collision.h"
 /**
 * @file Collision.cpp
 */
+
+
+#include "Collision.h"
+#include "../Engine/GameObject.h"
+
+
+/// <summary>
+/// ゲームオブジェクト同士の当たり判定を行う
+/// </summary>
+/// <param name="gameObjects">ゲームオブジェクト配列</param>
+void Collision::HandleGameObjectCollision(const GameObjectList& gameObjects)
+{
+	// ワールド座標系の衝突判定を作成
+	std::vector<WorldColliderList> colliders;
+	colliders.reserve(gameObjects.size());
+	for (const GameObjectPtr& e : gameObjects) {
+		if (e->colliders.empty()) continue;
+
+		WorldColliderList list(e->colliders.size());
+		for (int i = 0; i < e->colliders.size(); i++) {
+			// オリジナルのコライダーをコピー
+			list[i].origin = e->colliders[i];
+			list[i].world = e->colliders[i]->GetTransformedCollider(e->GetTransform());
+		}
+	}
+}
 
 
 /// <summary>
@@ -11,7 +36,7 @@
 /// <param name="b">AABBその②</param>
 /// <param name="penetration">貫通距離</param>
 /// <returns>交差しているかどうか</returns>
-bool Intersect(const AABB& a, const AABB& b, vec3& penetration)
+bool Collision::Intersect(const AABB& a, const AABB& b, vec3& penetration)
 {
 	// aの左側がbの右側より右にある場合は交差していない
 	const float dx0 = b.max.x - a.min.x;
@@ -67,12 +92,12 @@ bool Intersect(const AABB& a, const AABB& b, vec3& penetration)
 		if (length.x < length.z) {
 			penetration = { signedLength.x, 0, 0 };
 			return true;
-		}		
+		}
 	}
 	else if (length.y < length.z) {
 		penetration = { 0,signedLength.y,0 };
 		return true;
 	}
 	penetration = { 0, 0,signedLength.z };
-	return true;	
+	return true;
 }

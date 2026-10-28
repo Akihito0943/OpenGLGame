@@ -18,6 +18,7 @@ bool MainGameScene::Initialize(Engine& engine)
 {
 	player = engine.CreateGameObject<GameObject>("player");
 	player->AddComponent<PlayerCamera>();
+	//engine.GetMainCamera().SetParent(player);
 	//player->meshId = -1;
 
 	GameObjectPtr box1 = engine.CreateGameObject<GameObject>("box1");
@@ -28,7 +29,7 @@ bool MainGameScene::Initialize(Engine& engine)
 
 	GameObjectPtr crystal = engine.CreateGameObject<GameObject>("crystal");
 	crystal->meshId = 1;
-	crystal->position = { 2, 2, -2 };
+	crystal->position = { 2, 1, -2 };
 	crystal->texColor = std::make_shared<Texture>("Res/crystal_blue.tga");
 	crystal->SetParent(player);
 	

@@ -43,6 +43,12 @@ void GameObject::RemoveDestroyedComponent()
 	// オリジナル配列から移動済みコンポーネントを削除
 	components.erase(iter, components.end());
 
+	// コライダーはcollidersにも登録されているためこちらも削除
+	std::vector<ColliderPtr>::iterator iter2 = std::remove_if(
+		colliders.begin(), colliders.end(),
+		[](const ColliderPtr& c) { return c->IsDestroyed(); });
+	colliders.erase(iter2, colliders.end());
+
 	// 廃棄予定コンポーネントリストのOnDestroyを実行
 	for (ComponentPtr& p : destroyedComponentList) {
 		p->OnDestroy();
